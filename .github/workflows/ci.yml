@@ -28,5 +28,44 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Build Application
-        run: mvn clean package
+      name: Spring Boot CI
+
+on:
+push:
+branches:
+- main
+- develop
+- feature/**
+
+pull_request:
+branches:
+- main
+- develop
+
+jobs:
+build:
+
+```
+runs-on: ubuntu-latest
+
+steps:
+
+  - name: Checkout Code
+    uses: actions/checkout@v4
+
+  - name: Setup Java
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: 17
+
+  - name: Build Application
+    run: mvn clean verify
+
+  - name: SonarQube Scan
+    run: |
+      mvn sonar:sonar \
+      -Dsonar.projectKey=ecommerce-app \
+      -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+      -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+
